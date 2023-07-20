@@ -11,7 +11,7 @@ const blogPostSchema = new mongoose_1.default.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 const BlogPost = mongoose_1.default.model('BlogPost', blogPostSchema);
-mongoose_1.default.connect('mongodb://localhost:27017/simple-blog', {
+mongoose_1.default.connect('mongodb+srv://imamarham10:789456123@cluster0.dvan7mn.mongodb.net/?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
