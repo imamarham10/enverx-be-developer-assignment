@@ -1,6 +1,5 @@
 import express from "express";
 import bodyParser from "body-parser";
-import BlogPost from './model/blogPost';
 import { PostController } from './controller/blogPostController';
 
 

@@ -1,10 +1,29 @@
 import { Request, Response } from "express";
 import BlogPost from "../model/blogPost";
-
 export class PostController {
   public async getAllPosts(req: Request, res: Response): Promise<void> {
     try {
-      const posts = await BlogPost.find();
+      const { sortBy, filterByCategory } = req.query as {
+        sortBy?: string;
+        filterByCategory?: string;
+      };
+
+      const query: any = {};
+      if (filterByCategory) {
+        query.category = filterByCategory;
+      }
+      const posts = await BlogPost.find(query);
+      const allowedSortFields = ["createdAt", "title", "category"];
+      const sortByField = allowedSortFields.includes(sortBy as string)
+        ? (sortBy as string)
+        : "createdAt";
+
+      posts.sort((a: any, b: any) => {
+        if (sortByField === "createdAt") {
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        }
+        return a[sortByField].localeCompare(b[sortByField]);
+      });
       res.status(200).json(posts);
     } catch (err) {
       res.status(500).json({ message: `Internal server error!` });

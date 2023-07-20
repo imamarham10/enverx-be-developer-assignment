@@ -18,7 +18,22 @@ class PostController {
     getAllPosts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield blogPost_1.default.find();
+                const { sortBy, filterByCategory } = req.query;
+                const query = {};
+                if (filterByCategory) {
+                    query.category = filterByCategory;
+                }
+                const posts = yield blogPost_1.default.find(query);
+                const allowedSortFields = ["createdAt", "title", "category"];
+                const sortByField = allowedSortFields.includes(sortBy)
+                    ? sortBy
+                    : "createdAt";
+                posts.sort((a, b) => {
+                    if (sortByField === "createdAt") {
+                        return a.createdAt.getTime() - b.createdAt.getTime();
+                    }
+                    return a[sortByField].localeCompare(b[sortByField]);
+                });
                 res.status(200).json(posts);
             }
             catch (err) {
@@ -45,8 +60,8 @@ class PostController {
     createPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { title, content, author } = req.body;
-                const post = new blogPost_1.default({ title, content, author });
+                const { title, content, author, category } = req.body;
+                const post = new blogPost_1.default({ title, content, author, category });
                 const createdPost = yield post.save();
                 res.status(201).json(createdPost);
             }
@@ -58,8 +73,8 @@ class PostController {
     updatePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { title, content, author } = req.body;
-                const updatePost = yield blogPost_1.default.findByIdAndUpdate(req.params.id, { title, content, author }, { new: true });
+                const { title, content, author, category } = req.body;
+                const updatePost = yield blogPost_1.default.findByIdAndUpdate(req.params.id, { title, content, author, category }, { new: true });
                 if (!updatePost) {
                     res.status(404).json({ message: `No post found with this id` });
                 }
